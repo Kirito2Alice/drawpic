@@ -29,22 +29,14 @@ func DrawPanel(img *image.NRGBA, centerX, centerY, length, width int, color colo
 
 //DrawPoint 根据长宽画Panel
 func DrawPoint(img *image.NRGBA, centerX, centerY, size int, color color.Color) {
-	// switch types {
-	// case 0:
 	for x := centerX - size; x <= centerX+size; x++ {
 		for y := centerY - size; y <= centerY+size; y++ {
 			img.Set(x, y, color)
 		}
 	}
-	// case 1:
-	// 	for x := centerX - size; x <= centerX+size; x++ {
-	// 		for y := centerY - size; y <= centerY + size; y++ {
-	// 			img.Set(x, y, color)
-	// 		}
-	// 	}
-	// }
-
 }
+
+//DrawLine
 
 const (
 	dx = 1850
@@ -55,18 +47,18 @@ func main() {
 	var pi tools.ProductInfo
 	var coater tools.PinInfo
 
-	tools.Txt2LayoutInfo("5.76D.txt", &pi)
+	tools.Txt2LayoutInfo("11.6FC.txt", &pi)
 	tools.Txt2PinInfo("Coater_Pin.txt", &coater)
 	fmt.Println(pi)
 	fmt.Println(coater)
 
-	imgfile, _ := os.Create("test.png")
+	imgfile, _ := os.Create("11.6FC.png")
 	defer imgfile.Close()
 	img := image.NewNRGBA(image.Rect(0, 0, dx, dy))
 	fmt.Println("Draw a Picture!")
 	for y := 0; y < dy; y++ {
 		for x := 0; x < dx; x++ {
-			img.Set(x, y, color.RGBA{255, 255, 255, 0})
+			img.Set(x, y, color.RGBA{255, 255, 255, 255})
 		}
 	}
 	img.Set(925, 750, color.RGBA{255, 255, 0, 255})
@@ -74,8 +66,16 @@ func main() {
 		DrawPanel(img, v.X, v.Y, pi.PnlLength, pi.Pnlwidth, color.RGBA{255, 0, 255, 255})
 	}
 
-	for i := 0; i < len(coater.PinPoints); i++ {
-		DrawPoint(img, coater.PinPoints[i].X, coater.PinPoints[i].Y, 3, color.RGBA{255, 0, 0, 255})
+	//for i := 0; i < len(coater.PinPoints); i++ {
+	//	DrawPoint(img, coater.PinPoints[i].X, coater.PinPoints[i].Y, 3, color.RGBA{255, 0, 0, 255})
+	//}
+
+	res := tools.Txt2PointInfo("pp.txt", &pi)
+	fmt.Println("----------------")
+	fmt.Println(res)
+	fmt.Println(len(res))
+	for i := 0; i < len(res); i++ {
+		DrawPoint(img, res[i].X, res[i].Y, 3, color.RGBA{255, 0, 0, 255})
 	}
 
 	// 以PNG格式保存文件
