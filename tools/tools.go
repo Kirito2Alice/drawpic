@@ -45,7 +45,8 @@ func Txt2LayoutInfo(f string, p *ProductInfo) {
 	cr := csv.NewReader(temp)
 	cr.FieldsPerRecord = -1
 	s, _ := cr.ReadAll()
-	t := strings.Split(s[0][0], "\t")
+	tempStr := strings.Replace(s[0][0], " ", "", -1)
+	t := strings.Split(tempStr, "\t")
 	p.LotTpye = t[0]
 	l, _ := strconv.ParseFloat(t[1], 64)
 	w, _ := strconv.ParseFloat(t[2], 64)
@@ -54,7 +55,8 @@ func Txt2LayoutInfo(f string, p *ProductInfo) {
 	p.time = time.Now().Format("2006/01/02")
 
 	for i := 1; i < len(s); i++ {
-		t = strings.Split(s[i][0], "\t")
+		tempStr := strings.Replace(s[i][0], " ", "", -1)
+		t = strings.Split(tempStr, "\t")
 		var pp Point
 		//pp.PanelID = t[0]
 		x, _ := strconv.ParseFloat(t[1], 64)
@@ -69,6 +71,36 @@ func Txt2LayoutInfo(f string, p *ProductInfo) {
 		fmt.Println("Switch L & W!")
 	}
 
+}
+
+//Txt2PointInfo  txt文件提取玻璃排布信息
+func Txt2PointInfo(f string, p *ProductInfo) []Point {
+	temp, err := os.Open(f)
+	if err != nil {
+		fmt.Println("Open file failed [Err:%s]", err.Error())
+	}
+	defer temp.Close()
+
+	cr := csv.NewReader(temp)
+	cr.FieldsPerRecord = -1
+	s, _ := cr.ReadAll()
+
+	res := make([]Point, 0, 0)
+
+	for i := 0; i < len(s); i++ {
+		tempStr := strings.Replace(s[i][0], " ", "", -1)
+		t := strings.Split(tempStr, "\t")
+		var pp Point
+		x, _ := strconv.ParseFloat(t[1], 64)
+		y, _ := strconv.ParseFloat(t[2], 64)
+
+		pp.X = p.CentPoints[t[0]].X + int(x) - p.PnlLength/2
+		pp.Y = p.CentPoints[t[0]].Y + int(y) - p.Pnlwidth/2
+
+		res = append(res, pp)
+	}
+
+	return res
 }
 
 //Txt2PinInfo  txt文件提取玻璃排布信息
